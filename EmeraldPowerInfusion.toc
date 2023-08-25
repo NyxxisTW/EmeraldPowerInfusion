@@ -1,0 +1,8 @@
+## Interface: 11200
+## Title: Emerald Power Infusion
+## Author: Nyxxis
+## Version: 2.137
+## SavedVariablesPerCharacter: EmeraldPowerInfusion_Config
+
+EmeraldPowerInfusion.xml
+EmeraldPowerInfusion.lua
