@@ -37,9 +37,11 @@ local function Error(msg)
 	DEFAULT_CHAT_FRAME:AddMessage("[EPI]: "..START_COLOR..COLOR..tostring(msg)..END_COLOR)
 end
 
-local function SendMessage(message, target)
-	if (not target) then target = UnitName(PITarget) end
-	if (not target) then return end
+local function SendWhisper(message, target)
+	if (not target) then
+		Error("Invalid target.")
+		return
+	end
 	local channel = "WHISPER"
 	local language = GetDefaultLanguage()
 	SendChatMessage(message, channel, language, target)
@@ -277,13 +279,13 @@ local function OnEvent()
 		if (arg1 == EmeraldPowerInfusion_Config.Password) then
 			local _,_,_,_,rank = GetTalentInfo(1, 15)
 			if (rank <= 0) then
-				SendMessage("I don't have this talent.", arg2)
+				SendWhisper("I don't have this talent.", arg2)
 				return
 			end
 			local CD, CDvalue = GetSpellCooldown(GetPISpell(), BOOKTYPE_SPELL)
 			if (CD and CD ~= 0) then
 				local remainingCD = CDvalue - (GetTime() - CD)
-				SendMessage("PI ready in "..Round(remainingCD, 0).." sec.", arg2)
+				SendWhisper("PI ready in "..Round(remainingCD, 0).." sec.", arg2)
 			elseif (GetNumRaidMembers() > 0) then
 				local unit
 				for i = 1, GetNumRaidMembers() do
@@ -332,14 +334,14 @@ local function OnUpdate()
 		local start, duration = GetSpellCooldown(GetPISpell(), BOOKTYPE_SPELL)
 		local remaining = (start + duration) - GetTime()
 		if (start ~= 0 and PITarget and EmeraldPowerInfusion_PIIcon:IsShown()) then
-			SendMessage(EmeraldPowerInfusion_Config.Response)
+			SendWhisper(EmeraldPowerInfusion_Config.Response, PITargetName)
 			EmeraldPowerInfusion_PIIcon:Hide()
 			PITarget = nil
 		elseif (PITargetName and (RemainingCDPosted == false) and (remaining <= 30) and (remaining > 25)) then
-			SendMessage("PI ready in 30 sec.")
+			SendWhisper("PI ready in 30 sec.", PITargetName)
 			RemainingCDPosted = true
 		elseif ((start == 0) and (PITargetName) and (not PITarget)) then
-			SendMessage("PI ready!")
+			SendWhisper("PI ready!", PITargetName)
 			PITargetName = nil
 			RemainingCDPosted = false
 		end
