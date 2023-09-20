@@ -37,6 +37,14 @@ local function Error(msg)
 	DEFAULT_CHAT_FRAME:AddMessage("[EPI]: "..START_COLOR..COLOR..tostring(msg)..END_COLOR)
 end
 
+local function SendMessage(message, target)
+	if (not target) then target = UnitName(PITarget) end
+	if (not target) then return end
+	local channel = "WHISPER"
+	local language = GetDefaultLanguage()
+	SendChatMessage(message, channel, language, target)
+end
+
 ----- UTILITY -----
 
 local function SetScale(frame, scale)
@@ -269,13 +277,13 @@ local function OnEvent()
 		if (arg1 == EmeraldPowerInfusion_Config.Password) then
 			local _,_,_,_,rank = GetTalentInfo(1, 15)
 			if (rank <= 0) then
-				SendChatMessage("I don't have this talent.", "WHISPER", "Common", arg2)
+				SendMessage("I don't have this talent.", arg2)
 				return
 			end
 			local CD, CDvalue = GetSpellCooldown(GetPISpell(), BOOKTYPE_SPELL)
 			if (CD and CD ~= 0) then
 				local remainingCD = CDvalue - (GetTime() - CD)
-				SendChatMessage("PI ready in "..Round(remainingCD, 0).." sec.", "WHISPER", "Common", arg2)
+				SendMessage("PI ready in "..Round(remainingCD, 0).." sec.", arg2)
 			elseif (GetNumRaidMembers() > 0) then
 				local unit
 				for i = 1, GetNumRaidMembers() do
@@ -324,14 +332,14 @@ local function OnUpdate()
 		local start, duration = GetSpellCooldown(GetPISpell(), BOOKTYPE_SPELL)
 		local remaining = (start + duration) - GetTime()
 		if (start ~= 0 and PITarget and EmeraldPowerInfusion_PIIcon:IsShown()) then
-			SendChatMessage(EmeraldPowerInfusion_Config.Response, "WHISPER", "Common", PITargetName)
+			SendMessage(EmeraldPowerInfusion_Config.Response)
 			EmeraldPowerInfusion_PIIcon:Hide()
 			PITarget = nil
 		elseif (PITargetName and (RemainingCDPosted == false) and (remaining <= 30) and (remaining > 25)) then
-			SendChatMessage("PI ready in 30 sec.", "WHISPER", "Common", PITargetName)
+			SendMessage("PI ready in 30 sec.")
 			RemainingCDPosted = true
 		elseif ((start == 0) and (PITargetName) and (not PITarget)) then
-			SendChatMessage("PI ready!", "WHISPER", "Common", PITargetName)
+			SendMessage("PI ready!")
 			PITargetName = nil
 			RemainingCDPosted = false
 		end
